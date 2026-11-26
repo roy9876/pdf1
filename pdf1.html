@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Static Site PDF Generator</title>
+
+  <!-- Link to CSS file -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Load jsPDF and jsPDF-AutoTable plugin from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/5.0.9/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+  <h2>Create Your PDF</h2>
+
+  <!-- Page Setup: Orientation & Paper Size -->
+  <div class="options-box page-setup-row">
+    <div class="setup-item">
+      <label for="page-orientation"><strong>Orientation:</strong></label>
+      <select id="page-orientation">
+        <option value="portrait" selected>Portrait</option>
+        <option value="landscape">Landscape</option>
+      </select>
+    </div>
+
+    <div class="setup-item">
+      <label for="page-size"><strong>Paper Size:</strong></label>
+      <select id="page-size">
+        <option value="a4" selected>A4 (210 × 297 mm)</option>
+        <option value="letter">US Letter (8.5 × 11 in)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Top Toggle Options: Corporate Logo (Unchecked) & Document Title (Checked) -->
+  <div class="options-box">
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-logo" onchange="toggleSection('chk-logo', 'logo-controls')">
+      <label for="chk-logo"><strong>Include corporate logo</strong></label>
+    </div>
+
+    <!-- Logo Source Controls (Hidden by default) -->
+    <div id="logo-controls" class="sub-panel" style="display: none;">
+      <div class="logo-input-group">
+        <label for="logo-file">Upload from device:</label>
+        <div class="file-upload-row">
+          <input type="file" id="logo-file" accept="image/*" onchange="handleLogoFileSelect()">
+          <button type="button" id="clear-logo-btn" class="small-btn secondary" onclick="clearLogoFile()" style="display:none;">Clear File</button>
+        </div>
+      </div>
+
+      <div class="logo-input-group">
+        <label for="logo-url">Or use an image URL:</label>
+        <input type="text" id="logo-url" value="https://cdn.pixabay.com/photo/2016/10/16/13/06/new-york-1745089_1280.jpg" placeholder="https://example.com">
+      </div>
+    </div>
+
+    <div class="checkbox-row" style="margin-top: 12px;">
+      <input type="checkbox" id="chk-title" checked onchange="toggleInput('chk-title', 'pdf-title')">
+      <label for="chk-title"><strong>Include document title</strong></label>
+    </div>
+  </div>
+
+  <!-- Document Content Inputs -->
+  <div class="form-group">
+    <label class="block-label" for="pdf-title">Document Title:</label>
+    <input type="text" id="pdf-title" value="My Static Website Document">
+  </div>
+
+  <div class="form-group">
+    <div class="body-header-row">
+      <label class="block-label" for="pdf-body" style="margin-bottom:0;">Body Text:</label>
+      
+      <!-- Font Family & Size Selectors (8pt to 16pt) -->
+      <div class="font-controls">
+        <select id="body-font-family" title="Body Font Family">
+          <option value="helvetica" selected>Helvetica (Sans)</option>
+          <option value="times">Times (Serif)</option>
+          <option value="courier">Courier (Mono)</option>
+        </select>
+        <select id="body-font-size" title="Body Font Size">
+          <option value="8">8 pt</option>
+          <option value="9">9 pt</option>
+          <option value="10">10 pt</option>
+          <option value="11">11 pt</option>
+          <option value="12" selected>12 pt</option>
+          <option value="14">14 pt</option>
+          <option value="16">16 pt</option>
+        </select>
+      </div>
+    </div>
+    <textarea id="pdf-body" rows="5">This PDF was generated entirely in your browser using JavaScript without a backend server. Long paragraphs will automatically wrap and flow across multiple pages with repeating headers and footers.</textarea>
+  </div>
+
+  <!-- Header & Footer Options -->
+  <div class="options-box">
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-ts-header">
+      <label for="chk-ts-header">Add a timestamp header</label>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-ts-footer">
+      <label for="chk-ts-footer">Add a timestamp footer</label>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-custom-header" onchange="toggleInput('chk-custom-header', 'txt-custom-header')">
+      <label for="chk-custom-header">Add a custom header</label>
+      <input type="text" id="txt-custom-header" placeholder="Enter custom header text..." disabled>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-custom-footer" onchange="toggleInput('chk-custom-footer', 'txt-custom-footer')">
+      <label for="chk-custom-footer">Add a custom footer</label>
+      <input type="text" id="txt-custom-footer" placeholder="Enter custom footer text..." disabled>
+    </div>
+  </div>
+
+  <!-- Data Table Options -->
+  <div class="options-box">
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-datatable" onchange="toggleSection('chk-datatable', 'datatable-container')">
+      <label for="chk-datatable"><strong>Add a datatable</strong></label>
+    </div>
+
+    <div id="datatable-container" class="sub-panel" style="display: none;">
+      <div class="body-header-row">
+        <small class="grid-hint" style="margin-bottom:0;">Row 1 acts as the table header in the PDF:</small>
+        
+        <!-- Table Font Size Selector -->
+        <div class="font-controls">
+          <label for="table-font-size" style="font-size:12px; align-self:center;">Table Font:</label>
+          <select id="table-font-size" title="Table Font Size">
+            <option value="5">5 pt (Ultra Compact)</option>
+            <option value="6">6 pt (Wide Tables)</option>
+            <option value="7">7 pt (Compact)</option>
+            <option value="8" selected>8 pt (Standard)</option>
+            <option value="9">9 pt</option>
+            <option value="10">10 pt</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Dynamic Tip for Wide Tables (Shown automatically when > 6 columns exist) -->
+      <div id="wide-table-tip" class="tip-banner" style="display:none;">
+        <strong>Wide Table Detected:</strong> Switch <strong>Orientation</strong> to <strong>Landscape</strong> at the top and use <strong>5 pt or 6 pt</strong> Table Font so all columns fit cleanly without wrapping.
+      </div>
+      
+      <!-- Primary Table & CSV Controls -->
+      <div class="table-controls" style="margin-top: 8px;">
+        <button type="button" class="small-btn" onclick="document.getElementById('csv-file-input').click()">Import CSV</button>
+        <input type="file" id="csv-file-input" accept=".csv,text/csv" style="display:none;" onchange="importCSV(event)">
+        <button type="button" class="small-btn" onclick="addRow()">+ Add Row</button>
+        <button type="button" class="small-btn secondary" onclick="removeRow()">- Last Row</button>
+        <button type="button" class="small-btn" onclick="addColumn()">+ Add Col</button>
+        <button type="button" class="small-btn secondary" onclick="removeColumn()">- Last Col</button>
+        <button type="button" class="small-btn danger" onclick="clearTable()">Clear All</button>
+      </div>
+
+      <!-- Trim & Filter Controls for Imported CSVs -->
+      <div class="trim-controls">
+        <div class="trim-group">
+          <input type="number" id="del-col-num" min="1" placeholder="Col #" class="num-input">
+          <button type="button" class="small-btn secondary" onclick="deleteSpecificColumn()">Delete Col</button>
+        </div>
+
+        <div class="trim-group">
+          <input type="number" id="del-row-num" min="2" placeholder="Row #" class="num-input">
+          <button type="button" class="small-btn secondary" onclick="deleteSpecificRow()">Delete Row</button>
+        </div>
+
+        <div class="trim-group" style="flex-grow: 1;">
+          <input type="text" id="filter-keyword" placeholder="Filter rows by keyword (e.g. 150.00)..." style="padding: 5px 8px; font-size: 13px;">
+          <button type="button" class="small-btn" onclick="filterTableRows()">Filter</button>
+        </div>
+      </div>
+
+      <!-- Default 6-cell starting grid (3 rows x 2 columns) -->
+      <!-- =====================================================================
+           [DATATABLE GRID CONFIGURATION]
+           Currently set to 6 cells (3 rows x 2 columns).
+           - To add a COLUMN: Add another <td><input type="text" ...></td> inside EVERY <tr> below.
+           - To add a ROW: Copy an entire <tr>...</tr> block and paste it below the last </tr>.
+           The JavaScript will automatically detect any new rows or columns you add here
+           ===================================================================== -->             
+      <div class="table-scroll">
+        <table class="grid-table" id="user-data-grid">
+          <tr>
+            <td><input type="text" value="Item / Metric"></td>
+            <td><input type="text" value="Value / Amount"></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Row 2, Col 1"></td>
+            <td><input type="text" placeholder="Row 2, Col 2"></td>
+          </tr>
+          <tr>
+            <td><input type="text" placeholder="Row 3, Col 1"></td>
+            <td><input type="text" placeholder="Row 3, Col 2"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include Pictures Section (Appended at the end of the document) -->
+  <div class="options-box">
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-pictures" onchange="toggleSection('chk-pictures', 'pictures-controls')">
+      <label for="chk-pictures"><strong>Include pictures</strong></label>
+    </div>
+
+    <div id="pictures-controls" class="sub-panel" style="display: none;">
+      <small class="grid-hint">Select one or more images from your device to append at the end of the PDF:</small>
+      <div class="file-upload-row">
+        <input type="file" id="doc-pictures" accept="image/*" multiple onchange="handlePicturesSelect()">
+        <button type="button" id="clear-pictures-btn" class="small-btn secondary" onclick="clearPictures()" style="display:none;">Clear Pictures</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Filename Input (Auto-populated with YYYY-MM-DD_HH-MM_doc) -->
+  <div class="form-group">
+    <label class="block-label" for="pdf-filename">File Name:</label>
+    <div class="filename-wrapper">
+      <input type="text" id="pdf-filename" placeholder="YYYY-MM-DD_HH-MM_doc">
+      <span class="file-ext">.pdf</span>
+    </div>
+  </div>
+
+  <button id="download-btn" onclick="generatePDF()">Download PDF</button>
+
+  <!-- Link to your JavaScript file -->
+  <script src="script.js"></script>
+</body>
+</html>
