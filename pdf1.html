@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Static Site PDF Generator</title>
+
+  <!-- Link to CSS file -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Load jsPDF and jsPDF-AutoTable plugin from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.2.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/5.0.9/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+  <h2>Create Your PDF</h2>
+
+  <!-- Document Content Inputs -->
+  <div class="form-group">
+    <label class="block-label" for="pdf-title">Document Title:</label>
+    <input type="text" id="pdf-title" value="My Static Website Document">
+  </div>
+
+  <div class="form-group">
+    <label class="block-label" for="pdf-body">Body Text:</label>
+    <textarea id="pdf-body" rows="5">This PDF was generated entirely in your browser using JavaScript without a backend server. Long paragraphs will automatically wrap and flow across multiple pages with repeating headers and footers.</textarea>
+  </div>
+
+  <!-- Header & Footer Options -->
+  <div class="options-box">
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-ts-header">
+      <label for="chk-ts-header">Add a timestamp header</label>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-ts-footer">
+      <label for="chk-ts-footer">Add a timestamp footer</label>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-custom-header" onchange="toggleInput('chk-custom-header', 'txt-custom-header')">
+      <label for="chk-custom-header">Add a custom header</label>
+      <input type="text" id="txt-custom-header" placeholder="Enter custom header text..." disabled>
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-custom-footer" onchange="toggleInput('chk-custom-footer', 'txt-custom-footer')">
+      <label for="chk-custom-footer">Add a custom footer</label>
+      <input type="text" id="txt-custom-footer" placeholder="Enter custom footer text..." disabled>
+    </div>
+  </div>
+
+  <!-- Data Table Options -->
+  <div class="options-box">
+    <div class="checkbox-row">
+      <input type="checkbox" id="chk-datatable" onchange="toggleDatatable()">
+      <label for="chk-datatable"><strong>Add a datatable</strong></label>
+    </div>
+
+    <div id="datatable-container">
+      <small class="grid-hint">Row 1 acts as the table header in the PDF:</small>
+      
+      <!-- =====================================================================
+           [DATATABLE GRID CONFIGURATION]
+           Currently set to 6 cells (3 rows x 2 columns).
+           - To add a COLUMN: Add another <td><input type="text" ...></td> inside EVERY <tr> below.
+           - To add a ROW: Copy an entire <tr>...</tr> block and paste it below the last </tr>.
+           The JavaScript will automatically detect any new rows or columns you add here
+           ===================================================================== -->
+      <table class="grid-table" id="user-data-grid">
+        <tr>
+          <td><input type="text" value="Item / Metric"></td>
+          <td><input type="text" value="Value / Amount"></td>
+        </tr>
+        <tr>
+          <td><input type="text" placeholder="Row 2, Col 1"></td>
+          <td><input type="text" placeholder="Row 2, Col 2"></td>
+        </tr>
+        <tr>
+          <td><input type="text" placeholder="Row 3, Col 1"></td>
+          <td><input type="text" placeholder="Row 3, Col 2"></td>
+        </tr>
+      </table>
+      <!-- ===================================================================== -->
+    </div>
+  </div>
+
+  <button id="download-btn" onclick="generatePDF()">Download PDF</button>
+
+  <!-- Link to JavaScript file -->
+  <script src="script.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,116 @@
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  line-height: 1.5;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label.block-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input[type="text"], textarea {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+input[type="text"]:disabled {
+  background-color: #ececec;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.options-box {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 20px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.checkbox-row:last-child {
+  margin-bottom: 0;
+}
+
+.checkbox-row label {
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.checkbox-row input[type="text"] {
+  flex-grow: 1;
+  padding: 6px;
+}
+
+/* Data Table Grid Styling */
+#datatable-container {
+  display: none; /* Hidden until checkbox is checked */
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #ccc;
+}
+
+.grid-hint {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.grid-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grid-table td {
+  padding: 4px;
+}
+
+.grid-table input {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+}
+
+.grid-table tr:first-child input {
+  font-weight: bold;
+  background-color: #eef4fa;
+}
+
+button {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #ccc;
+}
+
+button:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
